@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -25,11 +25,17 @@ const userSchema = new Schema(
   },
 );
 
-userSchema.virtual('profile', {
-  ref: 'Profile',
-  localField: '_id',
-  foreignField: 'user',
+userSchema.virtual("profile", {
+  ref: "Profile",
+  localField: "_id",
+  foreignField: "user",
   justOne: true,
 });
 
-export default model('User', userSchema);
+userSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id",
+  foreignField: "user",
+  match: { activo: true }, // no trae tareas eliminadas
+});
+export default model("User", userSchema);

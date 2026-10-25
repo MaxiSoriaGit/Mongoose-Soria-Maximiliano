@@ -22,3 +22,10 @@ const tagSchema = new Schema(
 );
 
 export default model("Tag", tagSchema);
+
+tagSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id",
+  foreignField: "tags", // Task.tags es un array: Mongoose busca las tareas que contienen este _id
+  match: { activo: true },
+});
