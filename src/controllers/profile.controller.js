@@ -79,7 +79,7 @@ export const actualizarProfile = async (req, res) => {
     const profile = await Profile.findOneAndUpdate(
       { _id: id, activo: true },
       { $set: cambios },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
     if (!profile) {
       return res
@@ -110,7 +110,7 @@ export const eliminarProfile = async (req, res) => {
     const profile = await Profile.findOneAndUpdate(
       { _id: id, activo: true },
       { activo: false },
-      { new: true },
+      { returnDocument: "after" },
     );
     if (!profile) {
       return res

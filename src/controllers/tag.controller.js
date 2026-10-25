@@ -1,5 +1,6 @@
 import { matchedData } from "express-validator";
 import Tag from "../models/tag.model.js";
+import Task from "../models/task.model.js";
 
 export const crearTag = async (req, res) => {
   try {
@@ -19,7 +20,10 @@ export const crearTag = async (req, res) => {
 
 export const listarTags = async (req, res) => {
   try {
-    const tags = await Tag.find({ activo: true });
+    const tags = await Tag.find({ activo: true }).populate({
+      path: "tasks",
+      select: "titulo estado",
+    });
     res.status(200).json({ ok: true, data: tags });
   } catch (error) {
     res.status(500).json({
@@ -33,7 +37,10 @@ export const listarTags = async (req, res) => {
 export const obtenerTag = async (req, res) => {
   try {
     const { id } = matchedData(req);
-    const tag = await Tag.findOne({ _id: id, activo: true });
+    const tag = await Tag.findOne({ _id: id, activo: true }).populate({
+      path: "tasks",
+      select: "titulo estado",
+    });
     if (!tag) {
       return res
         .status(404)
@@ -53,7 +60,7 @@ export const actualizarTag = async (req, res) => {
   try {
     const { id, ...datos } = matchedData(req);
     const tag = await Tag.findOneAndUpdate({ _id: id, activo: true }, datos, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
     if (!tag) {
@@ -81,7 +88,7 @@ export const eliminarTag = async (req, res) => {
     const tag = await Tag.findOneAndUpdate(
       { _id: id, activo: true },
       { activo: false },
-      { new: true },
+      { returnDocument: "after" },
     );
     if (!tag) {
       return res
@@ -89,7 +96,8 @@ export const eliminarTag = async (req, res) => {
         .json({ ok: false, mensaje: "Etiqueta no encontrada" });
     }
 
-    // Cuando exista Task, acá se agrega la cascada: quitar esta etiqueta de Task.tags
+    // Cascada: quita la etiqueta de todas las tareas que la tenían
+    await Task.updateMany({ tags: id }, { $pull: { tags: id } });
 
     res
       .status(200)

@@ -6,6 +6,8 @@ import { startDB } from "./src/config/database.js";
 import userRoutes from "./src/routes/user.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 import tagRoutes from "./src/routes/tag.routes.js";
+import taskRoutes from "./src/routes/task.routes.js";
+
 const app = express();
 const PORT = process.env.PORT || 3005;
 
@@ -17,7 +19,8 @@ app.use(cors());
 //aca van las rutas
 app.use("/api", userRoutes);
 app.use("/api", profileRoutes);
-app.use("/api", tagRoutes);
+app.use("/api/tags", tagRoutes);
+app.use("/api/tasks", taskRoutes);
 
 const startServer = async () => {
   try {
