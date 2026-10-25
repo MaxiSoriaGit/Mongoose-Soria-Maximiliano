@@ -1,11 +1,11 @@
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import express from 'express';
-import 'dotenv/config';
-import { startDB } from './src/config/database.js';
-import userRoutes from './src/routes/user.routes.js';
-import profileRoutes from './src/routes/profile.routes.js';
-
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
+import "dotenv/config";
+import { startDB } from "./src/config/database.js";
+import userRoutes from "./src/routes/user.routes.js";
+import profileRoutes from "./src/routes/profile.routes.js";
+import tagRoutes from "./src/routes/tag.routes.js";
 const app = express();
 const PORT = process.env.PORT || 3005;
 
@@ -15,8 +15,9 @@ app.use(cookieParser());
 app.use(cors());
 
 //aca van las rutas
-app.use('/api', userRoutes);
-app.use('/api', profileRoutes);
+app.use("/api", userRoutes);
+app.use("/api", profileRoutes);
+app.use("/api", tagRoutes);
 
 const startServer = async () => {
   try {
@@ -26,7 +27,7 @@ const startServer = async () => {
       console.log(`Servidor listo en el puerto ${PORT}`);
     });
   } catch (error) {
-    console.error('Error al iniciar la base de datos:', error);
+    console.error("Error al iniciar la base de datos:", error);
   }
 };
 
