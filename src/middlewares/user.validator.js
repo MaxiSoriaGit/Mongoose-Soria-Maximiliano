@@ -21,7 +21,7 @@ export const validarCrearUser = [
     .isEmail()
     .withMessage('El email no es válido')
     .custom(async (email) => {
-      const existe = await User.findOne({ email: email.toLowerCase() });
+      const existe = await User.findOne({ email: email.toLowerCase(), activo: true });
       if (existe) throw new Error('Ya existe un usuario con ese email');
     }),
 ];
@@ -43,6 +43,7 @@ export const validarActualizarUser = [
     .custom(async (email, { req }) => {
       const existe = await User.findOne({
         email: email.toLowerCase(),
+        activo: true,
         _id: { $ne: req.params.id }, // ignora al propio usuario
       });
       if (existe) throw new Error('Ya existe un usuario con ese email');

@@ -5,12 +5,14 @@ import {
   obtenerTask,
   actualizarTask,
   eliminarTask,
+  agregarTagATask,
 } from "../controllers/task.controller.js";
 import { validarCampos } from "../middlewares/validarCampos.js";
 import {
   validarId,
   validarCrearTask,
   validarActualizarTask,
+  validarVinculoTag,
 } from "../middlewares/task.validator.js";
 
 const router = Router();
@@ -26,5 +28,11 @@ router.put(
   actualizarTask,
 );
 router.delete("/:id", validarId, validarCampos, eliminarTask);
+router.post(
+  "/:id/tags/:tagId",
+  validarVinculoTag,
+  validarCampos,
+  agregarTagATask,
+);
 
 export default router;

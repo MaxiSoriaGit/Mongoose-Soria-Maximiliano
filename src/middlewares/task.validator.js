@@ -1,6 +1,7 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import User from "../models/user.model.js";
 import Tag from "../models/tag.model.js";
+import Task from "../models/task.model.js";
 
 export { validarId } from "./user.validator.js";
 
@@ -79,4 +80,31 @@ export const validarActualizarTask = [
     .optional()
     .isIn(ESTADOS)
     .withMessage(`El estado debe ser uno de: ${ESTADOS.join(", ")}`),
+];
+const esIdValido = (valor) => /^[0-9a-fA-F]{24}$/.test(valor);
+
+export const validarVinculoTag = [
+  param("id")
+    .isMongoId()
+    .withMessage("El ID de la tarea no es un ObjectId válido")
+    .bail()
+    .custom(async (id) => {
+      const task = await Task.findOne({ _id: id, activo: true });
+      if (!task) throw new Error("La tarea no existe");
+    }),
+  param("tagId")
+    .isMongoId()
+    .withMessage("El ID de la etiqueta no es un ObjectId válido")
+    .bail()
+    .custom(async (tagId, { req }) => {
+      const tag = await Tag.findOne({ _id: tagId, activo: true });
+      if (!tag) throw new Error("La etiqueta no existe");
+
+      // Si el ID de la tarea es inválido, ese error ya se reporta arriba
+      if (!esIdValido(req.params.id)) return true;
+
+      const duplicado = await Task.exists({ _id: req.params.id, tags: tagId });
+      if (duplicado)
+        throw new Error("La etiqueta ya está vinculada a esta tarea");
+    }),
 ];

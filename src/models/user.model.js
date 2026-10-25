@@ -12,7 +12,6 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -23,6 +22,13 @@ const userSchema = new Schema(
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
+);
+
+// Índice único PARCIAL: el email solo debe repetirse entre usuarios ACTIVOS,
+// así un usuario borrado (activo: false) no bloquea volver a usar ese email
+userSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { activo: true } },
 );
 
 userSchema.virtual("profile", {

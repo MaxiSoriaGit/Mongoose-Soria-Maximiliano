@@ -9,13 +9,11 @@ export const crearTask = async (req, res) => {
       .status(201)
       .json({ ok: true, mensaje: "Tarea creada correctamente", data: task });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        mensaje: "Error al crear la tarea",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al crear la tarea",
+      error: error.message,
+    });
   }
 };
 
@@ -26,13 +24,11 @@ export const listarTasks = async (req, res) => {
       .populate("tags", "nombre");
     res.status(200).json({ ok: true, data: tasks });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        mensaje: "Error al listar las tareas",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al listar las tareas",
+      error: error.message,
+    });
   }
 };
 
@@ -49,13 +45,11 @@ export const obtenerTask = async (req, res) => {
     }
     res.status(200).json({ ok: true, data: task });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        mensaje: "Error al obtener la tarea",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al obtener la tarea",
+      error: error.message,
+    });
   }
 };
 
@@ -71,21 +65,17 @@ export const actualizarTask = async (req, res) => {
         .status(404)
         .json({ ok: false, mensaje: "Tarea no encontrada" });
     }
-    res
-      .status(200)
-      .json({
-        ok: true,
-        mensaje: "Tarea actualizada correctamente",
-        data: task,
-      });
+    res.status(200).json({
+      ok: true,
+      mensaje: "Tarea actualizada correctamente",
+      data: task,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        mensaje: "Error al actualizar la tarea",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al actualizar la tarea",
+      error: error.message,
+    });
   }
 };
 
@@ -106,12 +96,33 @@ export const eliminarTask = async (req, res) => {
       .status(200)
       .json({ ok: true, mensaje: "Tarea eliminada correctamente" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        mensaje: "Error al eliminar la tarea",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al eliminar la tarea",
+      error: error.message,
+    });
+  }
+};
+
+export const agregarTagATask = async (req, res) => {
+  try {
+    const { id, tagId } = matchedData(req);
+    const task = await Task.findOneAndUpdate(
+      { _id: id, activo: true },
+      { $addToSet: { tags: tagId } },
+      { returnDocument: "after" },
+    ).populate("tags", "nombre");
+
+    res.status(201).json({
+      ok: true,
+      mensaje: "Etiqueta vinculada correctamente a la tarea",
+      data: task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al vincular la etiqueta",
+      error: error.message,
+    });
   }
 };

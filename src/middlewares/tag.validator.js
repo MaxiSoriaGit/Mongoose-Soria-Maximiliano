@@ -13,7 +13,7 @@ export const validarCrearTag = [
     .isLength({ min: 2, max: 30 })
     .withMessage("El nombre debe tener entre 2 y 30 caracteres")
     .custom(async (nombre) => {
-      const existe = await Tag.findOne({ nombre: nombre.toLowerCase() });
+      const existe = await Tag.findOne({ nombre: nombre.toLowerCase(), activo: true });
       if (existe) throw new Error("Ya existe una etiqueta con ese nombre");
     }),
   body("descripcion")
@@ -34,6 +34,7 @@ export const validarActualizarTag = [
     .custom(async (nombre, { req }) => {
       const existe = await Tag.findOne({
         nombre: nombre.toLowerCase(),
+        activo: true,
         _id: { $ne: req.params.id },
       });
       if (existe) throw new Error("Ya existe una etiqueta con ese nombre");

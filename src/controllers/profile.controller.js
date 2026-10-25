@@ -4,6 +4,17 @@ import Profile from '../models/profile.model.js';
 export const crearProfile = async (req, res) => {
   try {
     const datos = matchedData(req);
+
+    // matchedData inyecta las rutas anidadas declaradas en el validador
+    // (direccion.calle / direccion.ciudad) aunque no vengan en el body, con valores undefined.
+    // Si la dirección viene vacía la descartamos: es opcional y Mongoose exigiría calle/ciudad.
+    if (datos.direccion) {
+      const tieneContenido = Object.values(datos.direccion).some(
+        (valor) => valor !== undefined && valor !== null && String(valor).trim() !== '',
+      );
+      if (!tieneContenido) delete datos.direccion;
+    }
+
     const profile = await Profile.create(datos);
     res
       .status(201)

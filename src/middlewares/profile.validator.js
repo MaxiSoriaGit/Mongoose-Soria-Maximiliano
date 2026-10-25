@@ -15,7 +15,7 @@ export const validarCrearProfile = [
       const user = await User.findOne({ _id: userId, activo: true });
       if (!user) throw new Error('El usuario no existe');
 
-      const perfil = await Profile.findOne({ user: userId });
+      const perfil = await Profile.findOne({ user: userId, activo: true });
       if (perfil)
         throw new Error('Ese usuario ya tiene un perfil (relación 1:1)');
     }),

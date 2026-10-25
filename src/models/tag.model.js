@@ -5,7 +5,6 @@ const tagSchema = new Schema(
     nombre: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
       minlength: 2,
@@ -21,7 +20,12 @@ const tagSchema = new Schema(
   },
 );
 
-export default model("Tag", tagSchema);
+// Índice único PARCIAL: solo se repite el nombre entre etiquetas ACTIVAS,
+// así una etiqueta borrada (activo: false) no bloquea volver a usar ese nombre
+tagSchema.index(
+  { nombre: 1 },
+  { unique: true, partialFilterExpression: { activo: true } },
+);
 
 tagSchema.virtual("tasks", {
   ref: "Task",
@@ -29,3 +33,5 @@ tagSchema.virtual("tasks", {
   foreignField: "tags", // Task.tags es un array: Mongoose busca las tareas que contienen este _id
   match: { activo: true },
 });
+
+export default model("Tag", tagSchema);
